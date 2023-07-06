@@ -17,26 +17,31 @@ driver.get("http://orteil.dashnet.org/experiments/cookie/")
 timeout = time.time() + 5
 five_min = time.time() + 60*5 # 5minutes
 
+# Gets the total amount of cookies
 def get_cookie_total():
     money = driver.find_element(By.ID, "money").text
+    # Have to replace the , in what we grab so we can compare it
     if "," in money:
         money = money.replace(",", "")
         money = int(money)
     return money
 
 
+# Clicks the Cookie
 def click_cookie():
     cookie_to_click = driver.find_element(By.ID, "cookie")
     cookie_to_click.click()
 
 
 def buy_upgrade(cookies):
+    # Grabs the current price of the upgrades.
     click_upgrade = int(driver.find_element(By.CSS_SELECTOR, "#buyCursor b").text.split(" ")[2].replace(",", ""))
     grandma_upgrade = int(driver.find_element(By.CSS_SELECTOR, "#buyGrandma b").text.split(" ")[2].replace(",", ""))
     factory_upgrade = int(driver.find_element(By.CSS_SELECTOR, "#buyFactory b").text.split(" ")[2].replace(",", ""))
     mine_upgrade = int(driver.find_element(By.CSS_SELECTOR, "#buyMine b").text.split(" ")[2].replace(",", ""))
     #print(f"total cookies {cookies}\n click upgrade price: {click_upgrade}\ngrandma upgrade price: {grandma_upgrade}\nfactory upgrade price: {factory_upgrade}\nmine upgrade price: {mine_upgrade}")
 
+    #logic for checking what upgrades you can buy
     if int(cookies) >= mine_upgrade:
         upgrade = driver.find_element(By.ID, "buyMine")
         upgrade.click()
@@ -58,9 +63,10 @@ def buy_upgrade(cookies):
 
 while game_on:
     click_cookie()
+    # checks for the time for upgrades. Set to every 5 seconds
     if time.time() > timeout:
         buy_upgrade(get_cookie_total())
-
+    # Checks if the game should be over. Set to 5 Mins
     if time.time() > five_min:
         cookie_per_s = driver.find_element(By.ID, "cps").text
         print(cookie_per_s)
